@@ -31,7 +31,7 @@ test.describe('General settings', { tag: ['@T3W1', '@T3T1'] }, () => {
                 stream: TestStream.Growth,
             }),
         },
-        async ({ analytics, settingsPage, dashboardPage, page }) => {
+        async ({ analytics, settingsPage, dashboardPage, analyticsSection, page }) => {
             await test.step('Check default currency is USD', async () => {
                 await expect(page.getByTestId('@dashboard/index')).toContainText('$0.00');
             });
@@ -98,10 +98,13 @@ test.describe('General settings', { tag: ['@T3W1', '@T3T1'] }, () => {
                 expect(settingsAnalyticsEvent.value).toBe('false');
             });
 
-            // TODO: enable this after https://github.com/trezor/trezor-suite/issues/13262 is fixed
-            // //reset app button - wipes db, reloads app, shows onboarding again
-            // await page.getByTestId('@settings/reset-app-button').click({ force: true });
-            // await expect(page.getByTestId('@onboarding/welcome')).toBeVisible({ timeout: 20000 });
+            await test.step('Reset app button - wipes db, reloads app, shows onboarding again', async () => {
+                await page.getByTestId('@settings/reset-app-button').click({ force: true });
+                await expect(analyticsSection.heading).toHaveTranslation(
+                    'TR_ONBOARDING_DATA_COLLECTION_HEADING',
+                    { timeout: 20_000 },
+                );
+            });
         },
     );
 });
